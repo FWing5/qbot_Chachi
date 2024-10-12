@@ -1,0 +1,12 @@
+# Python-specific
+*.pyc
+*.pyo
+__pycache__/
+.pytest_cache
+.coverage
+.DS_Store
+*.egg-info
+htmlcov/
+
+# General
+*.log
