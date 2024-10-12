@@ -6,6 +6,8 @@ from botpy import logging
 from botpy.ext.cog_yaml import read
 from botpy.message import GroupMessage, Message
 
+from plugins import anime_list
+
 test_config = read(os.path.join(os.path.dirname(__file__),"config.yaml"))
 
 _log = logging.get_logger()
@@ -22,16 +24,15 @@ class MyClient(botpy.Client):
               content= f"「{self.robot.name}」收到你@的消息了哦: 「{message.content}」")
         _log.info(messageResult)
 
-# class MyClient(botpy.Client):
-#     async def on_ready(self):
-#         _log.info(f"robot '{self.robot.name}' on_ready!")
-
-#     async def on_at_message_create(self, message: Message):
-#         _log.info(message.author.avatar)
-#         if "sleep" in message.content:
-#             await asyncio.sleep(10)
-#         _log.info(message.author.username)
-#         await message.reply(content = f"{self.robot.name}收到你@的消息了哦:{message.content}")
+        if "/今日新番" in message.content:
+            
+            result = 1
+            await message._api.post_group_message(
+                group_openid=message.group_openid,
+                msg_type=0,
+                msg_id=message.id,
+                content=f"{result}")
+ 
 
 if __name__ == "__main__":
     # 通过预设置的类型，设置需要监听的事件通道
