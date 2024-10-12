@@ -27,15 +27,29 @@ def get_anime_list(weekday):
 
         #整理为输出格式
         for day_data in jsonlist:
+
             if day_data['weekday']['id'] == weekday:
                 weekday_cn = day_data['weekday']['cn']
                 weekday_ja = day_data['weekday']['ja']
                 items = day_data['items']
 
-                output = f"今天是{weekday_cn}（{weekday_ja}），一共有{len(items)}部新番正在播出：\n"
+                output = f"今天是{weekday_cn}（{weekday_ja}），这些新番正在播出：\n"
+
                 for item in items:
-                    output += f"{item['name_cn']}（{item['name_ja']}）  评分★{item['rating']['score']}\n"
-                output += "该看那部呢？"
+                    
+                    #如果有中文名（筛选掉一些非正式番剧）
+                    if item['name_cn'] != "":
+                        output += f"◆{item['name_cn']}\n"
+
+                        #如果有评分则显示
+                        if 'rating' in item and isinstance(item['rating']['score'],(int,float)):    
+                            output += f"    评分☆{item['rating']['score']}({item['rating']['total']})\n"
+                        else:
+                            output += f"    暂无评分\n"
+                            
+                output += "该看那部呢？\n——以上数据来自Bangumi"
+
+                return output
 
         return "茶知好像在火星追番，什么都没有哦"
         

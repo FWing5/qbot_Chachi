@@ -1,7 +1,7 @@
 #Chachi主程序
 #目前功能：
 #       1 收到@时回复（测试功能）
-#       2 回复今日新番列表（插件进行中）
+#       2 回复今日新番列表
 
 import asyncio
 import os
@@ -32,17 +32,11 @@ class MyClient(botpy.Client):
     async def on_ready(self):
         _log.info(f"robot 「{self.robot.name}」 on_ready!")
 
-    #当群聊中bot被@时，调用此方法以表示机器人收到该消息（测试用功能）
+    #当群聊中bot被@时
     async def on_group_at_message_create(self, message: GroupMessage):
-        messageResult = await message._api.post_group_message(
-            group_openid=message.group_openid,
-              msg_type=0, 
-              msg_id=message.id,
-              content= f"「{self.robot.name}[4]」收到你@的消息了哦: 「{message.content}」")
-        _log.info(messageResult)
 
-        #使用“/每日放送”指令使bot回复今日新番列表
-        if "/每日放送" in message.content:
+        #使用“/今日放送”指令使bot回复今日新番列表
+        if "/今日放送" in message.content:
             reply = anime_list.get_anime_list(weekday)
             
             await message._api.post_group_message(
@@ -50,6 +44,16 @@ class MyClient(botpy.Client):
                 msg_type=0,
                 msg_id=message.id,
                 content=f"{reply}")
+            return
+
+        #无指令时回复一条消息以表示收到消息（测试用）
+        await message._api.post_group_message(
+            group_openid=message.group_openid,
+              msg_type=0, 
+              msg_id=message.id,
+              content= f"「{self.robot.name[:2]}」收到你@的消息了哦: 「{message.content}」")
+
+
  
 
 if __name__ == "__main__":
