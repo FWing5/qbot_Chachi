@@ -24,7 +24,7 @@ class MyClient(botpy.Client):
               content= f"「{self.robot.name}」收到你@的消息了哦: 「{message.content}」")
         _log.info(messageResult)
 
-        if "/今日新番" in message.content:
+        if "/每日放送" in message.content:
             
             result = 1
             await message._api.post_group_message(

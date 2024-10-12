@@ -6,12 +6,15 @@ import time
 def get_anime_list():
 
     url = "https://api.bgm.tv/calendar"
+    headers = {'accept':'application/json'}
     
-    response = requests.get(url)
-
-    data = response.json()
-    with open('testdata.json', 'w') as file:
-        json.dump(data,file)
+    response = requests.get(url, headers = headers)
+    if response.status_code == 200:
+        data = response.json()
+        with open('testdata.json', 'w', encoding = 'utf-8') as file:
+            json.dump(data, file, ensure_ascii=False, indent=4)
+    else:
+        return "requests failed:"+response.status_code
 
 get_anime_list()
 
