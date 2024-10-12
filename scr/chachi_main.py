@@ -1,7 +1,7 @@
 #Chachi主程序
 #目前功能：
 #       1 收到@时回复（测试功能）
-#       2 回复今日/明日新番列表（插件进行中）
+#       2 回复今日新番列表（插件进行中）
 
 import asyncio
 import os
@@ -13,8 +13,11 @@ from botpy.message import GroupMessage, Message
 
 from plugins import anime_list
 
-TODAY = 1   #使用常量1代表今天
-TMR = 2     #使用常量2代表明天
+import datetime
+
+#获取今天是周几，并用1-7的数字表示
+today = datetime.date.today()
+weekday = today.weekday()+1     #weekday()返回值为0-6
 
 #读取bot配置文件
 test_config = read(os.path.join(os.path.dirname(__file__),"config.yaml"))
@@ -40,17 +43,7 @@ class MyClient(botpy.Client):
 
         #使用“/每日放送”指令使bot回复今日新番列表
         if "/每日放送" in message.content:
-            reply = anime_list.get_anime_list(TODAY)
-            
-            await message._api.post_group_message(
-                group_openid=message.group_openid,
-                msg_type=0,
-                msg_id=message.id,
-                content=f"{reply}")
-            
-        #使用“/明日预告”指令使bot回复明日新番列表
-        if "/明日预告" in message.content:
-            reply = anime_list.get_anime_list(TMR)
+            reply = anime_list.get_anime_list(weekday)
             
             await message._api.post_group_message(
                 group_openid=message.group_openid,

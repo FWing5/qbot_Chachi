@@ -2,36 +2,49 @@ import requests
 import json
 import time
 
+#将会在main中直接被调用的get方法
+def get_anime_list(weekday):
+    """ 
+    获取今日新番目录，返回可直接输出的字符串
 
-def get_anime_list():
+    Args:
+        weekday(int): 今日为周几，1为周一，7为周日
 
-    url = "https://api.bgm.tv/calendar"
-    headers = {'accept':'application/json'}
+    Returns:
+        (str):当日的新番列表，或是错误信息
+    """
+
+    url = "https://api.bgm.tv/calendar"         #bangumiAPI中canlendar的url
+    headers = {'accept':'application/json'}     #请求头
     
-    response = requests.get(url, headers = headers)
+    response = requests.get(url, headers = headers)     #获取请求内容
+
+    #状态码为200时，请求成功
     if response.status_code == 200:
-        data = response.json()
-        with open('testdata.json', 'w', encoding = 'utf-8') as file:
-            json.dump(data, file, ensure_ascii=False, indent=4)
+
+        #将请求内容转换为json格式
+        jsonlist = response.json()
+
+        #整理为输出格式
+        for day_data in jsonlist:
+            if day_data['weekday']['id'] == weekday:
+                weekday_cn = day_data['weekday']['cn']
+                weekday_ja = day_data['weekday']['ja']
+                items = day_data['items']
+
+                output = f"今天是{weekday_cn}（{weekday_ja}），一共有{len(items)}部新番正在播出：\n"
+                for item in items:
+                    output += f"{item['name_cn']}（{item['name_ja']}）  评分★{item['rating']['score']}\n"
+                output += "该看那部呢？"
+
+        return "茶知好像在火星追番，什么都没有哦"
+        
+        #生成json文件的测试代码
+        # with open('testdata.json', 'w', encoding = 'utf-8') as file:
+        #     json.dump(data, file, ensure_ascii=False, indent=4)
+
+    #直接在机器人的回复中报告错误
     else:
-        return "requests failed:"+response.status_code
+        return "告诉飞飞这个对接暗号："+response.status_code
 
-get_anime_list()
-
-# def format_weather(city_name):
-
-#     city_encoded = city_name  # 重庆的URL编码
-#     weather_data = get_weather(city_encoded)
-
-#     # 检查是否返回了错误
-#     if 'error' in weather_data:
-#         return weather_data['error']
-#     else:
-#         # 实时天气
-#         realtime_weather = weather_data['realtime']
-#         result = f"实时天气:" + "\n" +  f"{realtime_weather['info']}, 温度: {realtime_weather['temperature']}℃, 湿度: {realtime_weather['humidity']}%, 风向: {realtime_weather['direct']}, 风力: {realtime_weather['power']}级, AQI: {realtime_weather['aqi']}"
-#         # 未来几天的天气
-#         result = result + "\n" + "未来几天的天气:"
-#         for day in weather_data['future']:
-#             result = result + "\n" + f"日期: {day['date']}, 天气: {day['weather']}, 温度: {day['temperature']}, 风向: {day['direct']}"
-#         return result
+#get_anime_list()
